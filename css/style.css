@@ -384,6 +384,133 @@ main {
   text-decoration: underline;
 }
 
+/* --- Commentaires d'épisode --- */
+.commentaires {
+  max-width: 900px;
+  margin: 2.5rem auto 0 auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid #2a2a33;
+}
+
+.commentaires-titre {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+#commentaires-compteur {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.commentaire-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.8rem;
+}
+
+.commentaire-input,
+.commentaire-textarea {
+  background: var(--bg-card);
+  border: 1px solid #2a2a33;
+  color: var(--text);
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.commentaire-input:focus,
+.commentaire-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.commentaire-input {
+  max-width: 260px;
+}
+
+.commentaire-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.commentaire-form-bas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.commentaire-form-bas button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.commentaire-form-bas button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.commentaire-form-bas button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.commentaire-erreur {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  min-height: 1rem;
+}
+
+.commentaires-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.commentaire {
+  background: var(--bg-card);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+}
+
+.commentaire-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.commentaire-pseudo {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.commentaire-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.commentaire-texte {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.commentaires-vide {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 /* --- Footer --- */
 .site-footer {
   text-align: center;
