@@ -131,6 +131,29 @@ async function ajouterEpisode(donnees, serieId, saisonId, { numero, titre, video
   return nouvelEpisode;
 }
 
+/* ---------- Commentaires d'épisode ---------- */
+
+async function chargerCommentaires(episodeId) {
+  const reponse = await fetch(`${API_URL}/episodes/${episodeId}/commentaires`);
+  if (!reponse.ok) throw new Error("Impossible de charger les commentaires");
+  return reponse.json();
+}
+
+async function ajouterCommentaire(episodeId, { pseudo, texte }) {
+  const reponse = await fetch(`${API_URL}/episodes/${episodeId}/commentaires`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pseudo, texte }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de l'envoi du commentaire");
+  return reponse.json();
+}
+
+async function supprimerCommentaire(commentaireId) {
+  const reponse = await fetch(`${API_URL}/commentaires/${commentaireId}`, { method: "DELETE" });
+  if (!reponse.ok) throw new Error("Erreur lors de la suppression du commentaire");
+}
+
 /* ---------- Suppression (appellent l'API, mettent à jour l'objet local) ---------- */
 
 async function supprimerSerie(donnees, serieId) {

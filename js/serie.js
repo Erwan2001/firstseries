@@ -35,6 +35,66 @@ async function chargerFicheSerie() {
   afficheEl.alt = serie.titre;
 
   afficherOngletsSaisons(serie);
+  mettreAJourBoutonsSerie(serie);
+}
+
+function mettreAJourBoutonsSerie(serie) {
+  const btnPlay = document.getElementById("btn-play-premier-episode");
+  const btnShare = document.getElementById("btn-share-serie");
+  const premier = obtenirPremierEpisode(serie);
+
+  if (!btnPlay || !btnShare || !premier) {
+    if (btnPlay) btnPlay.disabled = true;
+    if (btnShare) btnShare.disabled = true;
+    return;
+  }
+
+  btnPlay.disabled = false;
+  btnPlay.addEventListener("click", () => {
+    window.location.href = buildVideoUrl(serie.id, premier.saison.id, premier.episode.id);
+  });
+
+  btnShare.disabled = false;
+  btnShare.addEventListener("click", async () => {
+    const url = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(serie.id)}`;
+    const title = `Regarde ${serie.titre} sur FirstSeries.io`;
+    const text = `Découvre la série ${serie.titre} sur FirstSeries.io.`;
+
+    if (navigator.share) {
+      navigator.share({ title, text, url }).catch(() => {});
+      return;
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Lien de la série copié dans le presse-papiers.");
+        return;
+      } catch (error) {
+        // fallback vers prompt
+      }
+    }
+
+    prompt("Copie ce lien pour partager la série :", url);
+  });
+}
+
+function obtenirPremierEpisode(serie) {
+  if (!serie || !Array.isArray(serie.saisons) || serie.saisons.length === 0) {
+    return null;
+  }
+
+  const premiereSaison = [...serie.saisons].sort((a, b) => a.numero - b.numero)[0];
+  if (!premiereSaison || !Array.isArray(premiereSaison.episodes) || premiereSaison.episodes.length === 0) {
+    return null;
+  }
+
+  const premierEpisode = [...premiereSaison.episodes].sort((a, b) => a.numero - b.numero)[0];
+  return { saison: premiereSaison, episode: premierEpisode };
+}
+
+function buildVideoUrl(serieId, saisonId, episodeId) {
+  return `video.html?serie=${encodeURIComponent(serieId)}&saison=${encodeURIComponent(saisonId)}&episode=${encodeURIComponent(episodeId)}`;
 }
 
 function afficherOngletsSaisons(serie) {

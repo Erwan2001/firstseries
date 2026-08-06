@@ -42,6 +42,10 @@ async function chargerLecteur() {
   synopsisEl.textContent = serie.synopsis;
   retourEl.href = `serie.html?id=${encodeURIComponent(serie.id)}`;
 
+  // Zone de commentaires de cet épisode (voir commentaires.js).
+  // Pas de await : le lecteur ne doit pas attendre le chargement des commentaires.
+  initCommentaires(episode.id);
+
   const videoUrl = (episode.videoUrl || "").trim();
 
   // Fallbacks pour anciens formats
