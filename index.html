@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firsteries.io</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="logo">Firsteries<span>.io</span></a>
+    <input type="text" id="search-bar" placeholder="Rechercher une série...">
+  </header>
+
+  <main>
+    <!-- Hero Slider -->
+    <section id="hero-slider" class="hero-slider">
+      <div id="hero-slides" class="hero-slides"></div>
+      <div class="hero-nav">
+        <button id="hero-prev" class="hero-nav-btn hero-nav-prev">❮</button>
+        <div id="hero-dots" class="hero-dots"></div>
+        <button id="hero-next" class="hero-nav-btn hero-nav-next">❯</button>
+      </div>
+    </section>
+
+    <!-- Catalogue -->
+    <div class="catalogue-section">
+      <h2 class="section-title">Toutes les séries</h2>
+      <div id="serie-grid" class="video-grid">
+        <p id="loading-msg">Chargement du catalogue...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Firstseries.io | by Le Maxi Phasme</p>
+    <a href="admin.html" class="admin-link">Accéder à l’admin</a>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/catalogue.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

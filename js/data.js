@@ -1,0 +1,155 @@
+// data.js
+// Couche d'accès aux données : séries > saisons > épisodes
+// Parle à l'API du backend Express (server.js), qui stocke tout
+// dans data/db.json sur le disque.
+
+const API_URL = "/api";
+
+/**
+ * Charge toutes les données depuis le backend.
+ */
+async function chargerDonnees() {
+  const reponse = await fetch(`${API_URL}/data`);
+  if (!reponse.ok) throw new Error("Impossible de charger les données");
+  return reponse.json();
+}
+
+/* ---------- Accès / recherche (fonctions pures, inchangées) ---------- */
+
+function trouverSerie(donnees, serieId) {
+  return donnees.series.find((s) => s.id === serieId) || null;
+}
+
+function trouverSaison(serie, saisonId) {
+  return serie.saisons.find((s) => s.id === saisonId) || null;
+}
+
+function trouverEpisode(saison, episodeId) {
+  return saison.episodes.find((e) => e.id === episodeId) || null;
+}
+
+/* ---------- Ajout (appellent l'API, mettent à jour l'objet local) ---------- */
+
+async function ajouterSerie(donnees, { titre, synopsis, miniature }) {
+  const reponse = await fetch(`${API_URL}/series`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ titre, synopsis, miniature }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de l'ajout de la série");
+
+  const nouvelleSerie = await reponse.json();
+  donnees.series.push(nouvelleSerie);
+  return nouvelleSerie;
+}
+
+async function modifierSerie(donnees, serieId, { titre, synopsis, miniature }) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ titre, synopsis, miniature }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de la modification de la série");
+
+  const serieModifiee = await reponse.json();
+  const serie = trouverSerie(donnees, serieId);
+  if (serie) {
+    serie.titre = serieModifiee.titre;
+    serie.synopsis = serieModifiee.synopsis;
+    serie.miniature = serieModifiee.miniature;
+  }
+  return serieModifiee;
+}
+
+async function modifierSaison(donnees, serieId, saisonId, { numero }) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons/${saisonId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numero }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de la modification de la saison");
+
+  const saisonModifiee = await reponse.json();
+  const serie = trouverSerie(donnees, serieId);
+  const saison = serie ? trouverSaison(serie, saisonId) : null;
+  if (saison) {
+    saison.numero = saisonModifiee.numero;
+    serie.saisons.sort((a, b) => a.numero - b.numero);
+  }
+  return saisonModifiee;
+}
+
+async function modifierEpisode(donnees, serieId, saisonId, episodeId, { numero, titre, videoUrl }) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons/${saisonId}/episodes/${episodeId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numero, titre, videoUrl }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de la modification de l'épisode");
+
+  const episodeModifie = await reponse.json();
+  const serie = trouverSerie(donnees, serieId);
+  const saison = serie ? trouverSaison(serie, saisonId) : null;
+  const episode = saison ? trouverEpisode(saison, episodeId) : null;
+  if (episode) {
+    episode.numero = episodeModifie.numero;
+    episode.titre = episodeModifie.titre;
+    episode.videoUrl = episodeModifie.videoUrl;
+    saison.episodes.sort((a, b) => a.numero - b.numero);
+  }
+  return episodeModifie;
+}
+
+async function ajouterSaison(donnees, serieId, { numero }) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numero }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de l'ajout de la saison");
+
+  const nouvelleSaison = await reponse.json();
+  const serie = trouverSerie(donnees, serieId);
+  serie.saisons.push(nouvelleSaison);
+  serie.saisons.sort((a, b) => a.numero - b.numero);
+  return nouvelleSaison;
+}
+
+async function ajouterEpisode(donnees, serieId, saisonId, { numero, titre, videoUrl, embedCode, vromovId }) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons/${saisonId}/episodes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numero, titre, videoUrl: videoUrl ?? embedCode ?? vromovId }),
+  });
+  if (!reponse.ok) throw new Error("Erreur lors de l'ajout de l'épisode");
+
+  const nouvelEpisode = await reponse.json();
+  const serie = trouverSerie(donnees, serieId);
+  const saison = trouverSaison(serie, saisonId);
+  saison.episodes.push(nouvelEpisode);
+  saison.episodes.sort((a, b) => a.numero - b.numero);
+  return nouvelEpisode;
+}
+
+/* ---------- Suppression (appellent l'API, mettent à jour l'objet local) ---------- */
+
+async function supprimerSerie(donnees, serieId) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}`, { method: "DELETE" });
+  if (!reponse.ok) throw new Error("Erreur lors de la suppression de la série");
+  donnees.series = donnees.series.filter((s) => s.id !== serieId);
+}
+
+async function supprimerSaison(donnees, serieId, saisonId) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons/${saisonId}`, { method: "DELETE" });
+  if (!reponse.ok) throw new Error("Erreur lors de la suppression de la saison");
+  const serie = trouverSerie(donnees, serieId);
+  serie.saisons = serie.saisons.filter((s) => s.id !== saisonId);
+}
+
+async function supprimerEpisode(donnees, serieId, saisonId, episodeId) {
+  const reponse = await fetch(`${API_URL}/series/${serieId}/saisons/${saisonId}/episodes/${episodeId}`, { method: "DELETE" });
+  if (!reponse.ok) throw new Error("Erreur lors de la suppression de l'épisode");
+  const serie = trouverSerie(donnees, serieId);
+  const saison = trouverSaison(serie, saisonId);
+  saison.episodes = saison.episodes.filter((e) => e.id !== episodeId);
+}
