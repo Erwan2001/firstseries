@@ -38,7 +38,7 @@ function initialiserAuthentification() {
   const estAuthentifie = sessionStorage.getItem(CLÉ_AUTH_ADMIN) === "true";
   afficherInterfaceAdmin(estAuthentifie);
 
-  formulaire.addEventListener("submit", (event) => {
+  formulaire.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (motDePasseInput.value === MOT_DE_PASSE_ADMIN) {
@@ -46,6 +46,8 @@ function initialiserAuthentification() {
       erreur.textContent = "";
       afficherInterfaceAdmin(true);
       formulaire.reset();
+      donneesAdmin = await chargerDonnees();
+      remplirSelectsSeries();
     } else {
       erreur.textContent = "Mot de passe incorrect.";
       motDePasseInput.focus();
