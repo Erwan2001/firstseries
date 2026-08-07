@@ -30,11 +30,11 @@ function trouverEpisode(saison, episodeId) {
 
 /* ---------- Ajout (appellent l'API, mettent à jour l'objet local) ---------- */
 
-async function ajouterSerie(donnees, { titre, synopsis, miniature }) {
+async function ajouterSerie(donnees, { titre, synopsis, miniature, genres, affiche }) {
   const reponse = await fetch(`${API_URL}/series`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titre, synopsis, miniature }),
+    body: JSON.stringify({ titre, synopsis, miniature, genres, affiche }),
   });
   if (!reponse.ok) throw new Error("Erreur lors de l'ajout de la série");
 
@@ -43,11 +43,11 @@ async function ajouterSerie(donnees, { titre, synopsis, miniature }) {
   return nouvelleSerie;
 }
 
-async function modifierSerie(donnees, serieId, { titre, synopsis, miniature }) {
+async function modifierSerie(donnees, serieId, { titre, synopsis, miniature, genres, affiche }) {
   const reponse = await fetch(`${API_URL}/series/${serieId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titre, synopsis, miniature }),
+    body: JSON.stringify({ titre, synopsis, miniature, genres, affiche }),
   });
   if (!reponse.ok) throw new Error("Erreur lors de la modification de la série");
 
@@ -57,6 +57,8 @@ async function modifierSerie(donnees, serieId, { titre, synopsis, miniature }) {
     serie.titre = serieModifiee.titre;
     serie.synopsis = serieModifiee.synopsis;
     serie.miniature = serieModifiee.miniature;
+    serie.genres = serieModifiee.genres || [];
+    serie.affiche = Boolean(serieModifiee.affiche);
   }
   return serieModifiee;
 }

@@ -10,6 +10,44 @@ let episodeEnEditionSaisonId = null;
 
 const MOT_DE_PASSE_ADMIN = "Erwan170201";
 const CLÉ_AUTH_ADMIN = "fistunia-admin-auth";
+const GENRES_PREDEFINIS = [
+  "Action",
+  "Aventure",
+  "Comédie",
+  "Drame",
+  "Fantastique",
+  "Horreur",
+  "Policier",
+  "Science-Fiction",
+  "Thriller",
+];
+
+function créerCheckboxGenres() {
+  const groupe = document.getElementById("serie-genres-group");
+  if (!groupe) return;
+
+  groupe.innerHTML = GENRES_PREDEFINIS
+    .map(
+      (genre) => `
+        <label class="checkbox-label">
+          <input type="checkbox" name="serie-genres" value="${genre}">
+          ${genre}
+        </label>
+      `
+    )
+    .join("");
+}
+
+function lireGenresFormSerie() {
+  return Array.from(document.querySelectorAll("#serie-genres-group input[name='serie-genres']:checked"))
+    .map((input) => input.value);
+}
+
+function appliquerGenresFormSerie(genres = []) {
+  document.querySelectorAll("#serie-genres-group input[name='serie-genres']").forEach((input) => {
+    input.checked = genres.includes(input.value);
+  });
+}
 
 function afficherInterfaceAdmin(estAuthentifie) {
   const blocAuth = document.getElementById("admin-auth");
@@ -46,6 +84,7 @@ function initialiserAuthentification() {
       erreur.textContent = "";
       afficherInterfaceAdmin(true);
       formulaire.reset();
+      creerCheckboxGenres();
       donneesAdmin = await chargerDonnees();
       remplirSelectsSeries();
     } else {
@@ -109,6 +148,8 @@ function remplirFormSerie(serie) {
   document.getElementById("serie-titre-input").value = serie.titre || "";
   document.getElementById("serie-synopsis-input").value = serie.synopsis || "";
   document.getElementById("serie-miniature-input").value = serie.miniature || "";
+  appliquerGenresFormSerie(serie.genres || []);
+  document.getElementById("serie-affiche-checkbox").checked = Boolean(serie.affiche);
 }
 
 function remplirFormSaison(saison, serieId) {
@@ -130,6 +171,8 @@ function remplirFormEpisode(episode, serieId, saisonId) {
 
 function resetFormSerie() {
   document.getElementById("form-serie").reset();
+  appliquerGenresFormSerie([]);
+  document.getElementById("serie-affiche-checkbox").checked = false;
   definirEtatEditionSerie(null);
 }
 
@@ -154,6 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   remplirSelectsSeries();
 
+  creerCheckboxGenres();
   document.getElementById("form-serie").addEventListener("submit", onAjouterOuModifierSerie);
   document.getElementById("form-serie-annuler").addEventListener("click", resetFormSerie);
   document.getElementById("serie-charger-btn").addEventListener("click", chargerSeriePourModifier);
@@ -254,12 +298,14 @@ async function onAjouterOuModifierSerie(e) {
   const titre = document.getElementById("serie-titre-input").value;
   const synopsis = document.getElementById("serie-synopsis-input").value;
   const miniature = document.getElementById("serie-miniature-input").value;
+  const genres = lireGenresFormSerie();
+  const affiche = document.getElementById("serie-affiche-checkbox").checked;
 
   try {
     if (serieEnEditionId) {
-      await modifierSerie(donneesAdmin, serieEnEditionId, { titre, synopsis, miniature });
+      await modifierSerie(donneesAdmin, serieEnEditionId, { titre, synopsis, miniature, genres, affiche });
     } else {
-      await ajouterSerie(donneesAdmin, { titre, synopsis, miniature });
+      await ajouterSerie(donneesAdmin, { titre, synopsis, miniature, genres, affiche });
     }
 
     resetFormSerie();

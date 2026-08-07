@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Firsteries.io</title>
+  <title>Admin — FirstSeries.io</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 
   <header class="site-header">
-    <span class="logo">Firsteries<span>.io</span> <small class="admin-badge">ADMIN</small></span>
+    <span class="logo">FirstSeries<span>.io</span> <small class="admin-badge">ADMIN</small></span>
     <div class="admin-header-actions">
       <a href="index.html" class="admin-link-btn">Retour au site</a>
       <button type="button" id="admin-logout" class="admin-logout" hidden>Se déconnecter</button>
@@ -52,6 +52,14 @@
         </label>
         <label>URL de la miniature (optionnel)
           <input type="text" id="serie-miniature-input">
+        </label>
+        <fieldset class="form-fieldset">
+          <legend>Genres</legend>
+          <div id="serie-genres-group" class="genres-group"></div>
+        </fieldset>
+        <label class="checkbox-label">
+          <input type="checkbox" id="serie-affiche-checkbox">
+          Série à l'affiche
         </label>
         <div class="form-actions">
           <button type="submit" id="form-serie-submit">Ajouter la série</button>

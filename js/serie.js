@@ -28,6 +28,7 @@ async function chargerFicheSerie() {
   serieActuelle = serie;
 
   titreEl.textContent = serie.titre;
+  document.getElementById("serie-genres").textContent = (serie.genres || []).join(" • ");
   synopsisEl.textContent = serie.synopsis;
   afficheEl.src = serie.miniature && serie.miniature.trim() !== ""
     ? serie.miniature
